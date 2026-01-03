@@ -4,33 +4,27 @@ Views für das Dashboard Plugin
 
 import logging
 from django.views.generic import TemplateView
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from plugin.registry import registry
 
 logger = logging.getLogger('inventree')
 
 
-class DashboardView(TemplateView):
+class DashboardView(LoginRequiredMixin, TemplateView):
     """
     Dashboard View - Zeigt konfigurierte Links an
     """
     template_name = 'dashboard/dashboard.html'
+    login_url = '/accounts/login/'
 
     def dispatch(self, request, *args, **kwargs):
-        """Override dispatch to add logging and check authentication"""
+        """Override dispatch to add logging"""
         logger.info(f"=== DashboardView.dispatch START ===")
         logger.info(f"Request path: {request.path}")
         logger.info(f"Request method: {request.method}")
         logger.info(f"User: {request.user}")
         logger.info(f"User authenticated: {request.user.is_authenticated}")
-        logger.info(f"User is_anonymous: {request.user.is_anonymous}")
-        
-        # Check authentication manually
-        if not request.user.is_authenticated:
-            logger.warning("User not authenticated, redirecting to /web/")
-            return HttpResponseRedirect('/web/')
-        
-        logger.info("User is authenticated, proceeding with request")
         
         try:
             result = super().dispatch(request, *args, **kwargs)
@@ -58,7 +52,7 @@ class DashboardView(TemplateView):
         # Standard-Werte setzen
         context['links'] = []
         context['dashboard_title'] = 'Dashboard'
-        context['plugin_version'] = '0.0.22'
+        context['plugin_version'] = '0.0.23'
             
         if plugin:
             # Dashboard-Titel aus Settings
