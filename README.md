@@ -4,7 +4,7 @@ InvenTree Plugin für ein **benutzerdefiniertes Dashboard** mit konfigurierbaren
 
 ## Funktion
 
-Das Plugin stellt eine Dashboard-Seite bereit unter: **`/plugin/dashboard/`** (Trailing Slash wichtig)
+Das Plugin stellt eine Dashboard-Seite bereit unter: **`/plugin/gm-dashboard/`** (Trailing Slash wichtig)
 
 Auf dieser Seite werden konfigurierte Links als moderne Boxen in einem Grid-Layout angezeigt.
 
@@ -61,7 +61,7 @@ InvenTree kann Plugins beim Start automatisch installieren, wenn **Check Plugins
 
 Öffne die Seite:
 
-* `https://<dein-host>/plugin/dashboard/`
+* `https://<dein-host>/plugin/gm-dashboard/`
 
 Konfiguriere Links in den Plugin-Einstellungen:
 

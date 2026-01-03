@@ -13,10 +13,10 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
     """
 
     NAME = "Dashboard"
-    SLUG = "dashboard"
+    SLUG = "gm-dashboard"
     TITLE = "Dashboard"
     DESCRIPTION = "Dashboard Plugin für InvenTree mit benutzerdefinierten Links"
-    VERSION = "0.0.6"
+    VERSION = "0.0.7"
     AUTHOR = "GrischaMedia"
     PUBLISH_DATE = "2025-01-01"
     LICENSE = "GPL-3.0"
@@ -27,8 +27,7 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
         """
         from . import views
         return [
-            path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
-            path('dashboard', views.DashboardView.as_view(), name='dashboard-no-slash'),
+            path('gm-dashboard/', views.DashboardView.as_view(), name='gm-dashboard'),
         ]
 
     SETTINGS = {
