@@ -4,36 +4,45 @@ Views für das Dashboard Plugin
 
 import logging
 from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from plugin.registry import registry
 
 logger = logging.getLogger('inventree')
 
 
-class DashboardView(LoginRequiredMixin, TemplateView):
+class DashboardView(TemplateView):
     """
     Dashboard View - Zeigt konfigurierte Links an
     """
     template_name = 'dashboard/dashboard.html'
-    login_url = '/web/'
 
     def dispatch(self, request, *args, **kwargs):
-        """Override dispatch to add logging"""
-        logger.info(f"DashboardView.dispatch called for user: {request.user}, authenticated: {request.user.is_authenticated}")
+        """Override dispatch to add logging and check authentication"""
+        logger.info(f"=== DashboardView.dispatch START ===")
         logger.info(f"Request path: {request.path}")
         logger.info(f"Request method: {request.method}")
+        logger.info(f"User: {request.user}")
+        logger.info(f"User authenticated: {request.user.is_authenticated}")
+        logger.info(f"User is_anonymous: {request.user.is_anonymous}")
+        
+        # Check authentication manually
+        if not request.user.is_authenticated:
+            logger.warning("User not authenticated, redirecting to /web/")
+            return HttpResponseRedirect('/web/')
+        
+        logger.info("User is authenticated, proceeding with request")
         
         try:
             result = super().dispatch(request, *args, **kwargs)
-            logger.info(f"DashboardView.dispatch returning: {type(result)}")
+            logger.info(f"DashboardView.dispatch returning: {type(result)}, status: {getattr(result, 'status_code', 'N/A')}")
+            logger.info(f"=== DashboardView.dispatch END ===")
             return result
         except Exception as e:
             logger.error(f"DashboardView.dispatch ERROR: {str(e)}", exc_info=True)
             return HttpResponse(f"Error in DashboardView.dispatch: {str(e)}", status=500)
 
     def get_context_data(self, **kwargs):
-        logger.info("DashboardView.get_context_data called")
+        logger.info("=== DashboardView.get_context_data START ===")
         context = super().get_context_data(**kwargs)
 
         # Plugin-Instanz holen
@@ -42,14 +51,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             plugin = registry.get_plugin('gm-dashboard')
             logger.info(f"Plugin found: {plugin is not None}")
             if plugin:
-                logger.info(f"Plugin name: {plugin.NAME}, slug: {plugin.SLUG}")
+                logger.info(f"Plugin name: {plugin.NAME}, slug: {plugin.SLUG}, version: {plugin.VERSION}")
         except Exception as e:
             logger.error(f"Error getting plugin: {str(e)}", exc_info=True)
             
         # Standard-Werte setzen
         context['links'] = []
         context['dashboard_title'] = 'Dashboard'
-        context['plugin_version'] = '0.0.21'
+        context['plugin_version'] = '0.0.22'
             
         if plugin:
             # Dashboard-Titel aus Settings
@@ -96,14 +105,16 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 pass
 
         logger.info(f"Context prepared with {len(context.get('links', []))} links")
+        logger.info(f"=== DashboardView.get_context_data END ===")
         return context
 
     def render_to_response(self, context, **response_kwargs):
         """Override to add logging"""
-        logger.info("DashboardView.render_to_response called")
+        logger.info("=== DashboardView.render_to_response START ===")
         try:
             result = super().render_to_response(context, **response_kwargs)
             logger.info(f"Template rendered successfully, status: {result.status_code}")
+            logger.info(f"=== DashboardView.render_to_response END ===")
             return result
         except Exception as e:
             logger.error(f"Error rendering template: {str(e)}", exc_info=True)
