@@ -3,42 +3,40 @@ Views für das Dashboard Plugin
 """
 
 import logging
-from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import View
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 from plugin.registry import registry
 
 logger = logging.getLogger('inventree')
 
 
-class DashboardView(LoginRequiredMixin, TemplateView):
+class DashboardView(View):
     """
     Dashboard View - Zeigt konfigurierte Links an
     """
-    template_name = 'dashboard/dashboard.html'
-    login_url = '/accounts/login/'
-
+    
     def dispatch(self, request, *args, **kwargs):
-        """Override dispatch to add logging"""
+        """Override dispatch to add logging and check authentication"""
         logger.info(f"=== DashboardView.dispatch START ===")
         logger.info(f"Request path: {request.path}")
         logger.info(f"Request method: {request.method}")
         logger.info(f"User: {request.user}")
         logger.info(f"User authenticated: {request.user.is_authenticated}")
         
-        try:
-            result = super().dispatch(request, *args, **kwargs)
-            logger.info(f"DashboardView.dispatch returning: {type(result)}, status: {getattr(result, 'status_code', 'N/A')}")
-            logger.info(f"=== DashboardView.dispatch END ===")
-            return result
-        except Exception as e:
-            logger.error(f"DashboardView.dispatch ERROR: {str(e)}", exc_info=True)
-            return HttpResponse(f"Error in DashboardView.dispatch: {str(e)}", status=500)
+        # Check authentication
+        if not request.user.is_authenticated:
+            logger.warning("User not authenticated, redirecting to /web/")
+            from django.http import HttpResponseRedirect
+            return HttpResponseRedirect('/web/')
+        
+        logger.info("User is authenticated, proceeding with request")
+        return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        logger.info("=== DashboardView.get_context_data START ===")
-        context = super().get_context_data(**kwargs)
-
+    def get(self, request, *args, **kwargs):
+        """Handle GET request"""
+        logger.info("=== DashboardView.get START ===")
+        
         # Plugin-Instanz holen
         plugin = None
         try:
@@ -50,21 +48,19 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             logger.error(f"Error getting plugin: {str(e)}", exc_info=True)
             
         # Standard-Werte setzen
-        context['links'] = []
-        context['dashboard_title'] = 'Dashboard'
-        context['plugin_version'] = '0.0.23'
+        links = []
+        dashboard_title = 'Dashboard'
+        plugin_version = '0.0.22'
             
         if plugin:
             # Dashboard-Titel aus Settings
             try:
                 dashboard_title = plugin.get_setting('DASHBOARD_TITLE', 'Dashboard')
-                context['dashboard_title'] = dashboard_title
                 logger.info(f"Dashboard title: {dashboard_title}")
             except Exception as e:
                 logger.error(f"Error getting dashboard title: {str(e)}")
 
             # Links aus Settings sammeln
-            links = []
             try:
                 for i in range(1, 13):
                     try:
@@ -92,24 +88,26 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             except Exception as e:
                 logger.error(f"Error getting links: {str(e)}", exc_info=True)
 
-            context['links'] = links
             try:
-                context['plugin_version'] = plugin.VERSION
+                plugin_version = plugin.VERSION
             except Exception:
                 pass
 
-        logger.info(f"Context prepared with {len(context.get('links', []))} links")
-        logger.info(f"=== DashboardView.get_context_data END ===")
-        return context
-
-    def render_to_response(self, context, **response_kwargs):
-        """Override to add logging"""
-        logger.info("=== DashboardView.render_to_response START ===")
+        # Context für Template
+        context = {
+            'links': links,
+            'dashboard_title': dashboard_title,
+            'plugin_version': plugin_version,
+        }
+        
+        logger.info(f"Context prepared with {len(links)} links")
+        
+        # Template rendern
         try:
-            result = super().render_to_response(context, **response_kwargs)
-            logger.info(f"Template rendered successfully, status: {result.status_code}")
-            logger.info(f"=== DashboardView.render_to_response END ===")
-            return result
+            html = render_to_string('dashboard/dashboard.html', context, request=request)
+            logger.info("Template rendered successfully")
+            logger.info(f"=== DashboardView.get END ===")
+            return HttpResponse(html, content_type='text/html')
         except Exception as e:
             logger.error(f"Error rendering template: {str(e)}", exc_info=True)
             return HttpResponse(f"Error rendering template: {str(e)}", status=500)
