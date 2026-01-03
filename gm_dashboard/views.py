@@ -24,7 +24,7 @@ class DashboardView(LoginRequiredMixin, View):
         
         # Standard-Werte
         dashboard_title = 'Dashboard'
-        plugin_version = '0.0.12'
+        plugin_version = '0.0.13'
         links = []
         
         if plugin:

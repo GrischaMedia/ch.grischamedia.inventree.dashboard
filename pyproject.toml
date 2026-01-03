@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ch.grischamedia.inventree.dashboard"
-version = "0.0.12"
+version = "0.0.13"
 description = "Dashboard Plugin für InvenTree mit benutzerdefinierten Links"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -28,11 +28,11 @@ Homepage = "https://github.com/GrischaMedia/ch.grischamedia.inventree.dashboard"
 Repository = "https://github.com/GrischaMedia/ch.grischamedia.inventree.dashboard"
 
 [tool.setuptools]
-packages = ["dashboard"]
+packages = ["gm_dashboard"]
 
 [tool.setuptools.package-data]
-dashboard = ["templates/**/*", "static/**/*"]
+gm_dashboard = ["templates/**/*", "static/**/*"]
 
 [project.entry-points."inventree_plugins"]
-gm-dashboard = "dashboard:DashboardPlugin"
+gm-dashboard = "gm_dashboard:DashboardPlugin"
 
