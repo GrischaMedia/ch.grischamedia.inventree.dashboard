@@ -2,9 +2,12 @@
 Dashboard Plugin für InvenTree
 """
 
+import logging
 from django.urls import path
 from plugin import InvenTreePlugin
 from plugin.mixins import SettingsMixin, UrlsMixin
+
+logger = logging.getLogger('inventree')
 
 
 class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
@@ -16,7 +19,7 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
     SLUG = "gm-dashboard"
     TITLE = "Dashboard"
     DESCRIPTION = "Dashboard Plugin für InvenTree mit benutzerdefinierten Links"
-    VERSION = "0.0.20"
+    VERSION = "0.0.21"
     AUTHOR = "GrischaMedia"
     PUBLISH_DATE = "2025-01-01"
     LICENSE = "GPL-3.0"
@@ -25,10 +28,14 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
         """
         URL-Routing registrieren
         """
+        logger.info(f"DashboardPlugin.setup_urls called for plugin: {self.NAME} (SLUG: {self.SLUG})")
         from . import views
         urls = [
             path('gm-dashboard/', views.DashboardView.as_view(), name='gm-dashboard'),
         ]
+        logger.info(f"DashboardPlugin.setup_urls returning {len(urls)} URL patterns")
+        for url_pattern in urls:
+            logger.info(f"  - {url_pattern.pattern} -> {url_pattern.callback}")
         return urls
 
     SETTINGS = {
