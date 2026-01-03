@@ -4,6 +4,7 @@ Views für das Dashboard Plugin
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from plugin.registry import registry
 
 
@@ -12,6 +13,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     Dashboard View - Zeigt konfigurierte Links an
     """
     template_name = 'dashboard/dashboard.html'
+    
+    def get(self, request, *args, **kwargs):
+        """Override get to ensure we can render"""
+        try:
+            return super().get(request, *args, **kwargs)
+        except Exception as e:
+            # Fallback: Return simple HTML if template fails
+            return HttpResponse(f"<h1>Dashboard Plugin</h1><p>Template Error: {str(e)}</p>", content_type='text/html')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,50 +32,50 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         except Exception:
             pass
             
-        if not plugin:
-            context['links'] = []
-            context['dashboard_title'] = 'Dashboard'
-            context['plugin_version'] = '0.0.8'
-            return context
+        # Standard-Werte setzen
+        context['links'] = []
+        context['dashboard_title'] = 'Dashboard'
+        context['plugin_version'] = '0.0.9'
+            
+        if plugin:
+            # Dashboard-Titel aus Settings
+            try:
+                dashboard_title = plugin.get_setting('DASHBOARD_TITLE', 'Dashboard')
+                context['dashboard_title'] = dashboard_title
+            except Exception:
+                pass
 
-        # Dashboard-Titel aus Settings
-        try:
-            dashboard_title = plugin.get_setting('DASHBOARD_TITLE', 'Dashboard')
-        except Exception:
-            dashboard_title = 'Dashboard'
-        context['dashboard_title'] = dashboard_title
+            # Links aus Settings sammeln
+            links = []
+            try:
+                for i in range(1, 13):
+                    try:
+                        title = plugin.get_setting(f'LINK_{i}_TITLE', '').strip()
+                        url = plugin.get_setting(f'LINK_{i}_URL', '').strip()
+                        icon = plugin.get_setting(f'LINK_{i}_ICON', '').strip()
+                        new_tab = plugin.get_setting(f'LINK_{i}_NEW_TAB', False)
 
-        # Links aus Settings sammeln
-        links = []
-        try:
-            for i in range(1, 13):
-                try:
-                    title = plugin.get_setting(f'LINK_{i}_TITLE', '').strip()
-                    url = plugin.get_setting(f'LINK_{i}_URL', '').strip()
-                    icon = plugin.get_setting(f'LINK_{i}_ICON', '').strip()
-                    new_tab = plugin.get_setting(f'LINK_{i}_NEW_TAB', False)
+                        # Nur Links hinzufügen, wenn Titel und URL vorhanden sind
+                        if title and url:
+                            # Sicherstellen, dass URL absolut ist (mit http:// oder https://)
+                            if not url.startswith(('http://', 'https://', '//')):
+                                url = 'https://' + url
+                            
+                            links.append({
+                                'title': title,
+                                'url': url,
+                                'icon': icon,
+                                'new_tab': new_tab,
+                            })
+                    except Exception:
+                        continue
+            except Exception:
+                pass
 
-                    # Nur Links hinzufügen, wenn Titel und URL vorhanden sind
-                    if title and url:
-                        # Sicherstellen, dass URL absolut ist (mit http:// oder https://)
-                        if not url.startswith(('http://', 'https://', '//')):
-                            url = 'https://' + url
-                        
-                        links.append({
-                            'title': title,
-                            'url': url,
-                            'icon': icon,
-                            'new_tab': new_tab,
-                        })
-                except Exception:
-                    continue
-        except Exception:
-            pass
-
-        context['links'] = links
-        try:
-            context['plugin_version'] = plugin.VERSION
-        except Exception:
-            context['plugin_version'] = '0.0.8'
+            context['links'] = links
+            try:
+                context['plugin_version'] = plugin.VERSION
+            except Exception:
+                pass
 
         return context
