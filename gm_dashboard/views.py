@@ -26,7 +26,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # Standard-Werte setzen
         context['links'] = []
         context['dashboard_title'] = 'Dashboard'
-        context['plugin_version'] = plugin.VERSION if plugin else '0.0.18'
+        context['plugin_version'] = '0.0.19'
             
         if plugin:
             # Dashboard-Titel aus Settings
