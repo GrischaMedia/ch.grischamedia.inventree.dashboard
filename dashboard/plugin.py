@@ -2,7 +2,7 @@
 Dashboard Plugin für InvenTree
 """
 
-from django.urls import path, include
+from django.urls import path
 from plugin import InvenTreePlugin
 from plugin.mixins import SettingsMixin, UrlsMixin
 
@@ -16,7 +16,7 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
     SLUG = "dashboard"
     TITLE = "Dashboard"
     DESCRIPTION = "Dashboard Plugin für InvenTree mit benutzerdefinierten Links"
-    VERSION = "0.0.4"
+    VERSION = "0.0.5"
     AUTHOR = "GrischaMedia"
     PUBLISH_DATE = "2025-01-01"
     LICENSE = "GPL-3.0"
@@ -25,8 +25,9 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
         """
         URL-Routing registrieren
         """
+        from . import views
         return [
-            path('dashboard/', include('dashboard.urls')),
+            path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
         ]
 
     SETTINGS = {
