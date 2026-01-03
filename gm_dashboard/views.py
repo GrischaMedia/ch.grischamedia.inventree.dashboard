@@ -31,7 +31,7 @@ class DashboardView(LoginRequiredMixin, View):
                 <h1>Dashboard Plugin</h1>
                 <p class="success">✓ URL-Routing funktioniert!</p>
                 <p>Wenn du diese Seite siehst, funktioniert die URL-Registrierung korrekt.</p>
-                <p>Plugin-Version: 0.0.14</p>
+                <p>Plugin-Version: 0.0.15</p>
             </div>
         </body>
         </html>

@@ -16,7 +16,7 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
     SLUG = "gm-dashboard"
     TITLE = "Dashboard"
     DESCRIPTION = "Dashboard Plugin für InvenTree mit benutzerdefinierten Links"
-    VERSION = "0.0.14"
+    VERSION = "0.0.15"
     AUTHOR = "GrischaMedia"
     PUBLISH_DATE = "2025-01-01"
     LICENSE = "GPL-3.0"
@@ -26,9 +26,10 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
         URL-Routing registrieren
         """
         from . import views
-        return [
+        urls = [
             path('gm-dashboard/', views.DashboardView.as_view(), name='gm-dashboard'),
         ]
+        return urls
 
     SETTINGS = {
         'DASHBOARD_TITLE': {
