@@ -17,47 +17,56 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Plugin-Instanz holen
+        plugin = None
         try:
             plugin = registry.get_plugin('gm-dashboard')
         except Exception:
-            plugin = None
+            pass
             
         if not plugin:
             context['links'] = []
             context['dashboard_title'] = 'Dashboard'
-            context['plugin_version'] = '0.0.7'
+            context['plugin_version'] = '0.0.8'
             return context
 
         # Dashboard-Titel aus Settings
-        dashboard_title = plugin.get_setting('DASHBOARD_TITLE', 'Dashboard')
+        try:
+            dashboard_title = plugin.get_setting('DASHBOARD_TITLE', 'Dashboard')
+        except Exception:
+            dashboard_title = 'Dashboard'
         context['dashboard_title'] = dashboard_title
 
         # Links aus Settings sammeln
         links = []
         try:
             for i in range(1, 13):
-                title = plugin.get_setting(f'LINK_{i}_TITLE', '').strip()
-                url = plugin.get_setting(f'LINK_{i}_URL', '').strip()
-                icon = plugin.get_setting(f'LINK_{i}_ICON', '').strip()
-                new_tab = plugin.get_setting(f'LINK_{i}_NEW_TAB', False)
+                try:
+                    title = plugin.get_setting(f'LINK_{i}_TITLE', '').strip()
+                    url = plugin.get_setting(f'LINK_{i}_URL', '').strip()
+                    icon = plugin.get_setting(f'LINK_{i}_ICON', '').strip()
+                    new_tab = plugin.get_setting(f'LINK_{i}_NEW_TAB', False)
 
-                # Nur Links hinzufügen, wenn Titel und URL vorhanden sind
-                if title and url:
-                    # Sicherstellen, dass URL absolut ist (mit http:// oder https://)
-                    if not url.startswith(('http://', 'https://', '//')):
-                        url = 'https://' + url
-                    
-                    links.append({
-                        'title': title,
-                        'url': url,
-                        'icon': icon,
-                        'new_tab': new_tab,
-                    })
+                    # Nur Links hinzufügen, wenn Titel und URL vorhanden sind
+                    if title and url:
+                        # Sicherstellen, dass URL absolut ist (mit http:// oder https://)
+                        if not url.startswith(('http://', 'https://', '//')):
+                            url = 'https://' + url
+                        
+                        links.append({
+                            'title': title,
+                            'url': url,
+                            'icon': icon,
+                            'new_tab': new_tab,
+                        })
+                except Exception:
+                    continue
         except Exception:
-            links = []
+            pass
 
         context['links'] = links
-        context['plugin_version'] = plugin.VERSION if plugin else '0.0.7'
+        try:
+            context['plugin_version'] = plugin.VERSION
+        except Exception:
+            context['plugin_version'] = '0.0.8'
 
         return context
-
