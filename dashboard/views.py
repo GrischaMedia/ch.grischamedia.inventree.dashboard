@@ -37,6 +37,10 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
             # Nur Links hinzufügen, wenn Titel und URL vorhanden sind
             if title and url:
+                # Sicherstellen, dass URL absolut ist (mit http:// oder https://)
+                if not url.startswith(('http://', 'https://', '//')):
+                    url = 'https://' + url
+                
                 links.append({
                     'title': title,
                     'url': url,
