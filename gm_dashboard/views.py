@@ -12,6 +12,15 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     Dashboard View - Zeigt konfigurierte Links an
     """
     template_name = 'dashboard/dashboard.html'
+    login_url = '/web/'
+
+    def dispatch(self, request, *args, **kwargs):
+        """Override dispatch to catch errors"""
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except Exception as e:
+            from django.http import HttpResponse
+            return HttpResponse(f"Error in DashboardView: {str(e)}", status=500)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -26,7 +35,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # Standard-Werte setzen
         context['links'] = []
         context['dashboard_title'] = 'Dashboard'
-        context['plugin_version'] = '0.0.19'
+        context['plugin_version'] = '0.0.20'
             
         if plugin:
             # Dashboard-Titel aus Settings
