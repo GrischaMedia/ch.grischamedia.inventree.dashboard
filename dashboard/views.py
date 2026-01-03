@@ -4,7 +4,6 @@ Views für das Dashboard Plugin
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
 from plugin.registry import registry
 
 
@@ -13,14 +12,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     Dashboard View - Zeigt konfigurierte Links an
     """
     template_name = 'dashboard/dashboard.html'
-    
-    def get(self, request, *args, **kwargs):
-        """Override get to ensure we can render"""
-        try:
-            return super().get(request, *args, **kwargs)
-        except Exception as e:
-            # Fallback: Return simple HTML if template fails
-            return HttpResponse(f"<h1>Dashboard Plugin</h1><p>Template Error: {str(e)}</p>", content_type='text/html')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -35,7 +26,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # Standard-Werte setzen
         context['links'] = []
         context['dashboard_title'] = 'Dashboard'
-        context['plugin_version'] = '0.0.9'
+        context['plugin_version'] = '0.0.10'
             
         if plugin:
             # Dashboard-Titel aus Settings
