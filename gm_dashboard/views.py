@@ -3,20 +3,17 @@ Views für das Dashboard Plugin
 """
 
 from django.views.generic import View
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 from plugin.registry import registry
 
 
-@method_decorator(login_required, name='dispatch')
 class DashboardView(View):
     """
     Dashboard View - Zeigt konfigurierte Links an
     """
     
     def dispatch(self, request, *args, **kwargs):
-        """Override dispatch to ensure no redirect"""
+        """Override dispatch to check authentication without redirect"""
         if not request.user.is_authenticated:
             return HttpResponse("Not authenticated", status=401)
         return super().dispatch(request, *args, **kwargs)
@@ -32,7 +29,7 @@ class DashboardView(View):
         
         # Standard-Werte
         dashboard_title = 'Dashboard'
-        plugin_version = '0.0.16'
+        plugin_version = '0.0.17'
         links = []
         
         if plugin:

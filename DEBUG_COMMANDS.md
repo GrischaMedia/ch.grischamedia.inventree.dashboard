@@ -1,9 +1,21 @@
 # Debugging-Befehle für Portainer
 
+## 0. Container-Namen finden
+```bash
+# Alle Container anzeigen
+docker ps
+
+# Oder in Portainer: Container → Liste anzeigen
+# Der Container heißt wahrscheinlich: inventree-server oder inventree_web oder ähnlich
+```
+
 ## 1. Plugin-Status prüfen
 ```bash
-# In den inventree-server Container gehen
-docker exec -it <container-name> python manage.py shell
+# Zuerst Container-Namen finden (siehe oben)
+# Dann Container-Namen ersetzen, z.B.:
+docker exec -it inventree-server python manage.py shell
+# ODER wenn es ein Stack ist:
+docker exec -it <stack-name>_inventree-server_1 python manage.py shell
 
 # Dann in der Python-Shell:
 from plugin.registry import registry
