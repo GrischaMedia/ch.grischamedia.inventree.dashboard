@@ -1,0 +1,2 @@
+# Dashboard Plugin für InvenTree
+
