@@ -19,24 +19,39 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
     SLUG = "gm-dashboard"
     TITLE = "Dashboard"
     DESCRIPTION = "Dashboard Plugin für InvenTree mit benutzerdefinierten Links"
-    VERSION = "0.0.24"
+    VERSION = "0.0.255"
     AUTHOR = "GrischaMedia"
     PUBLISH_DATE = "2025-01-01"
     LICENSE = "GPL-3.0"
+    
+    def __init__(self, *args, **kwargs):
+        """Initialize plugin with logging"""
+        logger.info(f"DashboardPlugin.__init__ called for {self.NAME} (SLUG: {self.SLUG})")
+        super().__init__(*args, **kwargs)
+        logger.info(f"DashboardPlugin.__init__ completed for {self.NAME}")
 
     def setup_urls(self):
         """
         URL-Routing registrieren
         """
+        logger.info(f"=== DashboardPlugin.setup_urls START ===")
         logger.info(f"DashboardPlugin.setup_urls called for plugin: {self.NAME} (SLUG: {self.SLUG})")
-        from . import views
-        urls = [
-            path('gm-dashboard/', views.DashboardView.as_view(), name='gm-dashboard'),
-        ]
-        logger.info(f"DashboardPlugin.setup_urls returning {len(urls)} URL patterns")
-        for url_pattern in urls:
-            logger.info(f"  - {url_pattern.pattern} -> {url_pattern.callback}")
-        return urls
+        try:
+            from . import views
+            logger.info(f"Views imported successfully: {views}")
+            logger.info(f"DashboardView: {views.DashboardView}")
+            
+            urls = [
+                path('gm-dashboard/', views.DashboardView.as_view(), name='gm-dashboard'),
+            ]
+            logger.info(f"DashboardPlugin.setup_urls returning {len(urls)} URL patterns")
+            for url_pattern in urls:
+                logger.info(f"  - Pattern: {url_pattern.pattern} -> Callback: {url_pattern.callback} -> Name: {url_pattern.name}")
+            logger.info(f"=== DashboardPlugin.setup_urls END ===")
+            return urls
+        except Exception as e:
+            logger.error(f"Error in setup_urls: {str(e)}", exc_info=True)
+            raise
 
     SETTINGS = {
         'DASHBOARD_TITLE': {

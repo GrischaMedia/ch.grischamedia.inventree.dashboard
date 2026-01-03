@@ -50,7 +50,7 @@ class DashboardView(View):
         # Standard-Werte setzen
         links = []
         dashboard_title = 'Dashboard'
-        plugin_version = '0.0.22'
+        plugin_version = '0.0.255'
             
         if plugin:
             # Dashboard-Titel aus Settings
