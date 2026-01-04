@@ -3,7 +3,6 @@ Dashboard Plugin für InvenTree
 """
 
 import logging
-from django.urls import path
 from plugin import InvenTreePlugin
 from plugin.mixins import SettingsMixin, UrlsMixin
 
@@ -19,7 +18,7 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
     SLUG = "gm-dashboard"
     TITLE = "Dashboard"
     DESCRIPTION = "Dashboard Plugin für InvenTree mit benutzerdefinierten Links"
-    VERSION = "0.0.255"
+    VERSION = "0.0.26"
     AUTHOR = "GrischaMedia"
     PUBLISH_DATE = "2025-01-01"
     LICENSE = "GPL-3.0"
@@ -37,18 +36,11 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
         logger.info(f"=== DashboardPlugin.setup_urls START ===")
         logger.info(f"DashboardPlugin.setup_urls called for plugin: {self.NAME} (SLUG: {self.SLUG})")
         try:
-            from . import views
-            logger.info(f"Views imported successfully: {views}")
-            logger.info(f"DashboardView: {views.DashboardView}")
-            
-            urls = [
-                path('gm-dashboard/', views.DashboardView.as_view(), name='gm-dashboard'),
-            ]
-            logger.info(f"DashboardPlugin.setup_urls returning {len(urls)} URL patterns")
-            for url_pattern in urls:
-                logger.info(f"  - Pattern: {url_pattern.pattern} -> Callback: {url_pattern.callback} -> Name: {url_pattern.name}")
+            from . import urls
+            logger.info(f"URLs imported successfully: {urls}")
+            logger.info(f"URL patterns: {urls.urlpatterns}")
             logger.info(f"=== DashboardPlugin.setup_urls END ===")
-            return urls
+            return urls.urlpatterns
         except Exception as e:
             logger.error(f"Error in setup_urls: {str(e)}", exc_info=True)
             raise
