@@ -48,7 +48,7 @@ class DashboardView(TemplateView):
         dashboard_title = 'Dashboard'
         box_title = 'InvenTree Links'
         box_subtitle = 'Erstelle Links in den Plugin Einstellungen.'
-        plugin_version = '1.0.1'
+        plugin_version = '1.0.2'
             
         if plugin:
             # Dashboard-Titel aus Settings

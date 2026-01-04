@@ -18,7 +18,7 @@ class DashboardPlugin(SettingsMixin, UrlsMixin, InvenTreePlugin):
     SLUG = "gm-dashboard"
     TITLE = "Dashboard"
     DESCRIPTION = "Dashboard Plugin für InvenTree mit benutzerdefinierten Links"
-    VERSION = "1.0.1"
+    VERSION = "1.0.2"
     AUTHOR = "GrischaMedia"
     PUBLISH_DATE = "2025-01-01"
     LICENSE = "GPL-3.0"
