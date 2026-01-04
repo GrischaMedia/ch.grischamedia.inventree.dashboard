@@ -64,10 +64,17 @@ body {
 }
 
 .card-title {
-  margin: 0;
+  margin: 0 0 0.5rem 0;
   font-size: 1.5rem;
   font-weight: 600;
   color: #212529;
+}
+
+.card-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #6c757d;
 }
 
 .card-body {
@@ -106,7 +113,7 @@ body {
 .link-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
-  color: #0d6efd;
+  color: #212529;
 }
 
 .link-title {
@@ -180,7 +187,7 @@ body {
 <body>
   <div class="page">
     <div class="topbar">
-      <span>InvenTree - {{ dashboard_title }}</span>
+      <span>{{ dashboard_title }}</span>
       {% if plugin_version %}
       <span class="version-badge">v{{ plugin_version }}</span>
       {% endif %}
@@ -189,7 +196,10 @@ body {
     <div class="container">
       <div class="card">
         <div class="card-header">
-          <h1 class="card-title">{{ dashboard_title }}</h1>
+          <h1 class="card-title">{{ box_title }}</h1>
+          {% if box_subtitle %}
+          <p class="card-subtitle">{{ box_subtitle }}</p>
+          {% endif %}
         </div>
 
         <div class="card-body">

@@ -46,15 +46,31 @@ class DashboardView(TemplateView):
         # Standard-Werte setzen
         links = []
         dashboard_title = 'Dashboard'
-        plugin_version = '1.0.0'
+        box_title = 'InvenTree Links'
+        box_subtitle = 'Erstelle Links in den Plugin Einstellungen.'
+        plugin_version = '1.0.1'
             
         if plugin:
             # Dashboard-Titel aus Settings
             try:
-                dashboard_title = plugin.get_setting('DASHBOARD_TITLE', 'Dashboard')
+                dashboard_title = plugin.get_setting('GENERAL_DASHBOARD_TITLE', 'Dashboard')
                 logger.info(f"Dashboard title: {dashboard_title}")
             except Exception as e:
                 logger.error(f"Error getting dashboard title: {str(e)}")
+            
+            # Box-Titel aus Settings
+            try:
+                box_title = plugin.get_setting('GENERAL_BOX_TITLE', 'InvenTree Links')
+                logger.info(f"Box title: {box_title}")
+            except Exception as e:
+                logger.error(f"Error getting box title: {str(e)}")
+            
+            # Box-Untertitel aus Settings
+            try:
+                box_subtitle = plugin.get_setting('GENERAL_BOX_SUBTITLE', 'Erstelle Links in den Plugin Einstellungen.')
+                logger.info(f"Box subtitle: {box_subtitle}")
+            except Exception as e:
+                logger.error(f"Error getting box subtitle: {str(e)}")
 
             # Links aus Settings sammeln
             try:
@@ -92,6 +108,8 @@ class DashboardView(TemplateView):
         # Context setzen
         context['links'] = links
         context['dashboard_title'] = dashboard_title
+        context['box_title'] = box_title
+        context['box_subtitle'] = box_subtitle
         context['plugin_version'] = plugin_version
         
         logger.info(f"Context prepared with {len(links)} links")
